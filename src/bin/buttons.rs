@@ -11,9 +11,8 @@ use embassy::channel::mpmc::{Channel, Sender};
 use embassy::executor::Spawner;
 use embassy::time::{Delay, Duration, Timer};
 use embassy_nrf::gpio::{AnyPin, Input, Level, Output, OutputDrive, Pin, Pull};
-use embassy_nrf::twim::{self};
 use embassy_nrf::{interrupt, spim, Peripherals};
-
+nrf-embassy
 use embedded_graphics::{image::Image, pixelcolor::Rgb565, prelude::*};
 use embedded_hal_async::spi::ExclusiveDevice;
 use st7735_embassy::{self, ST7735};
@@ -21,6 +20,8 @@ use tinybmp::Bmp;
 
 static CHANNEL: Channel<ThreadModeRawMutex, ButtonEvent, 1> = Channel::new();
 
+// This task awaits for the button to go high and low,
+// and debounces by waiting 25 ms.
 #[embassy::task(pool_size = 4)]
 async fn button_listener(
     sender: Sender<'static, ThreadModeRawMutex, ButtonEvent, 1>,
@@ -42,7 +43,7 @@ async fn button_listener(
 async fn main(spawner: Spawner, p: Peripherals) {
     // Channel
     let sender = CHANNEL.sender();
-    let mut receiver = CHANNEL.receiver();
+    let receiver = CHANNEL.receiver();
     // Buttons configuration
     let btn1 = Input::new(p.P0_11.degrade(), Pull::Up);
     let btn2 = Input::new(p.P0_12.degrade(), Pull::Up);
@@ -66,16 +67,16 @@ async fn main(spawner: Spawner, p: Peripherals) {
     let mut config_spi = spim::Config::default();
     config_spi.frequency = spim::Frequency::M32;
     let irq = interrupt::take!(SPIM3);
-    // spim args: spi instance, irq, sck, mosi/SDA, config
+    // SPIM args: spi instance, irq, sck, mosi/SDA, config
     let spim = spim::Spim::new_txonly(p.SPI3, irq, p.P0_04, p.P0_28, config_spi);
-    // cs_pin: chip select pin
+    // CS: chip select pin
     let cs_pin = Output::new(p.P0_31, Level::Low, OutputDrive::Standard);
     let spi_dev = ExclusiveDevice::new(spim, cs_pin);
 
-    // rst:  display reset pin, managed at driver level
+    // RST:  display reset pin, managed at driver level
     let rst = Output::new(p.P0_30, Level::High, OutputDrive::Standard);
-    // dc: data/command selection pin,                         managed at driver level
 
+    // DC: data/command selection pin, A0 on this screen, managed at driver level
     let dc = Output::new(p.P0_29, Level::High, OutputDrive::Standard);
 
     // Config display
@@ -99,6 +100,7 @@ async fn main(spawner: Spawner, p: Peripherals) {
 
     backlight.set_high();
     let mut is_turned = false;
+
     loop {
         if let event = receiver.recv().await {
             match event {
@@ -106,11 +108,13 @@ async fn main(spawner: Spawner, p: Peripherals) {
                     info!("Btn {:#?} pressed", id);
                     match id {
                         Button::Right => start_point.x = (start_point.x + 10) % 160,
-                        Button::Left => start_point.x = (start_point.x - 10) % 160,
+                        // The + 128 is necessary to compensate for negative numbers
+                        Button::Left => start_point.x = (start_point.x - 10 + 128) % 160,
                         Button::Up => {
                             is_turned = true;
-                            start_point.y = (start_point.y - 10) % 128;
-                            println!("Start point y {}", start_point.y);
+                            // change to
+                            // y = if y - 10 < -ferrishöjd { 128 } else { y - 10 };
+                            start_point.y = (start_point.y - 10 + 128) % 128;
                         }
                         Button::Down => {
                             is_turned = false;
@@ -122,6 +126,7 @@ async fn main(spawner: Spawner, p: Peripherals) {
                     } else {
                         image = Image::new(&raw_image_front, start_point);
                     }
+
                     display.clear(Rgb565::BLACK).unwrap();
                     image.draw(&mut display).unwrap();
                     display.flush().await.unwrap();
