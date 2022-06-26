@@ -1,3 +1,6 @@
+// Control Ferris with an accelerometer.
+// The limits of the screen are like an aquarium, it will not
+// appear on the other side!
 // $ cargo rb gyro
 #![no_std]
 #![no_main]
@@ -5,9 +8,9 @@
 
 use nrf_embassy as _; // global logger + panicking-behavior + memory layout
 
-// Use info to get data from the accelerator
+// Unquote the `use defmt::info` statement to log data from the accelerator
 // For ex: `info!("r/p: {:?}", acc);`
-use defmt::info;
+// use defmt::info;
 use embassy::executor::Spawner;
 use embassy::time::Delay;
 use embassy_nrf::gpio::{Level, Output, OutputDrive};
@@ -20,7 +23,10 @@ use st7735_embassy::{self, ST7735};
 use tinybmp::Bmp;
 
 use mpu6050_async::*;
+// Dimensions of the character
 const FERRIS_LENGTH: i32 = 86;
+const FERRIS_HEIGHT: i32 = 64;
+
 #[embassy::main]
 async fn main(spawner: Spawner, p: Peripherals) {
     // SPI configuration
@@ -75,23 +81,31 @@ async fn main(spawner: Spawner, p: Peripherals) {
     loop {
         count_to_blink += 1;
         // Get gyro data, scaled with sensitivity
-        let gyro = mpu.get_gyro().await.unwrap();
-        //info!("gyro: {:?}", gyro);
+        // Unquote if you want to do things with the gyro.
+        // let gyro = mpu.get_gyro().await.unwrap();
+        // info!("gyro: {:?}", gyro);
         let acc = mpu.get_acc_angles().await.unwrap();
-        // Change those magic numbers to modify acceleration of
-        // Ferris on screen
+
+        // Change those magic numbers to modify acceleration
+        // of Ferris on screen
         let roll = (acc.0 * 2.0) as i32;
         let pitch = (acc.1 * 2.0) as i32;
+
         start_point.x = match start_point.x - roll {
             x if x < 0 => 0,
             x if x > 160 - FERRIS_LENGTH => 160 - FERRIS_LENGTH,
             _ => start_point.x - roll,
         };
-        start_point.y = (start_point.y + pitch) % 128;
+        start_point.y = match start_point.y + pitch {
+            y if y < 0 => 0,
+            y if y > 128 - FERRIS_HEIGHT => 128 - FERRIS_HEIGHT,
+            _ => start_point.y + pitch,
+        };
 
+        // If Ferris is turned front, given by the pitch.
         if acc.1 >= 0.0 {
             image = Image::new(&raw_image_front, start_point);
-            // makes Ferris blink every 50 counts
+            // Makes Ferris blink every 50 counts
             if count_to_blink >= 50 {
                 image = Image::new(&raw_image_blink, start_point);
                 count_to_blink = 0;
