@@ -12,7 +12,7 @@ use embassy::executor::Spawner;
 use embassy::time::{Delay, Duration, Timer};
 use embassy_nrf::gpio::{AnyPin, Input, Level, Output, OutputDrive, Pin, Pull};
 use embassy_nrf::{interrupt, spim, Peripherals};
-nrf-embassy
+
 use embedded_graphics::{image::Image, pixelcolor::Rgb565, prelude::*};
 use embedded_hal_async::spi::ExclusiveDevice;
 use st7735_embassy::{self, ST7735};
@@ -20,6 +20,11 @@ use tinybmp::Bmp;
 
 static CHANNEL: Channel<ThreadModeRawMutex, ButtonEvent, 1> = Channel::new();
 
+// Dimensions of the character
+const FERRIS_LENGTH: i32 = 86;
+const FERRIS_HEIGHT: i32 = 64;
+const SCREEN_LENGTH: i32 = 160;
+const SCREEN_HEIGHT: i32 = 128;
 // This task awaits for the button to go high and low,
 // and debounces by waiting 25 ms.
 #[embassy::task(pool_size = 4)]
@@ -107,18 +112,36 @@ async fn main(spawner: Spawner, p: Peripherals) {
                 ButtonEvent::Pressed(id) => {
                     info!("Btn {:#?} pressed", id);
                     match id {
-                        Button::Right => start_point.x = (start_point.x + 10) % 160,
-                        // The + 128 is necessary to compensate for negative numbers
-                        Button::Left => start_point.x = (start_point.x - 10 + 128) % 160,
+                        Button::Right => {
+                            start_point.x = if start_point.x + 10 > SCREEN_LENGTH {
+                                -FERRIS_LENGTH
+                            } else {
+                                start_point.x + 10
+                            }
+                        }
+                        Button::Left => {
+                            start_point.x = if start_point.x - 10 < -FERRIS_LENGTH {
+                                160
+                            } else {
+                                start_point.x - 10
+                            };
+                        }
                         Button::Up => {
                             is_turned = true;
-                            // change to
-                            // y = if y - 10 < -ferrishöjd { 128 } else { y - 10 };
-                            start_point.y = (start_point.y - 10 + 128) % 128;
+
+                            start_point.y = if start_point.y - 10 < -FERRIS_HEIGHT {
+                                128
+                            } else {
+                                start_point.y - 10
+                            };
                         }
                         Button::Down => {
                             is_turned = false;
-                            start_point.y = (start_point.y + 10) % 128;
+                            start_point.y = if start_point.y + 10 > SCREEN_HEIGHT {
+                                -FERRIS_HEIGHT
+                            } else {
+                                start_point.y + 10
+                            };
                         }
                     }
                     if is_turned {
