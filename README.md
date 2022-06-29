@@ -7,7 +7,7 @@ cargo rb <demo>
 ```
 With demo = buttons, gyro, qdec
 
-## Board buttons and screen
+## Demo 1: `buttons`; board buttons and screen
 
 The first example uses the nRF52840-DK and a [TFT LCD Display](https://www.amazon.com/Display-Module-ST7735-128x160-STM32/dp/B07BFV69DZ) (specs: 1.8 inch Color TFT LCD Display Module 128*160 Interface SPI Drive ST7735, can be bought at Amazon but really from anywhere.
 
@@ -36,7 +36,7 @@ You can move Ferris around with the buttons. It will appear on the other side of
 
 https://vimeo.com/705697973
 
-## Accelerometer demo
+## Demo 2: `gyro`; Accelerometer 
 
 The second example uses the same screen and board, and adds a [MPU6050 accelerometer](https://www.electrokit.com/en/product/mpu-6050-accelerometer-3-axel-monterad-pa-kort-2/).
 
@@ -70,7 +70,7 @@ Check the [async driver](https://github.com/kalkyl/mpu6050-async.git) for this p
 https://vimeo.com/705697951
 
 
-## Rotary encoder demo
+## Demo 3: `qdec`; Rotary encoder 
 
 The third example uses the same screen and board, with a rotary encoder [EC11](https://www.digikey.se/sv/products/detail/bourns-inc./PEC11R-4220F-S0024/4499660?utm_adgroup=Encoders&utm_source=google&utm_medium=cpc&utm_campaign=Shopping_Product_Sensors%2C%20Transducers&utm_term=&productid=4499660).
 
