@@ -56,7 +56,6 @@ async fn main(_spawner: Spawner, p: Peripherals) {
     let mut rotary_enc = Qdec::new(p.QDEC, irq, p.P0_26, p.P0_27, config);
 
     info!("Turn rotary encoder!");
-
     loop {
         width += rotary_enc.read().await;
         info!("Value: {}", width);
@@ -65,6 +64,7 @@ async fn main(_spawner: Spawner, p: Peripherals) {
             include_bytes!("../../assets/ferris.raw"),
             width.max(0) as u32,
         );
+        display.clear(Rgb565::BLACK).unwrap();
         im.draw(&mut display).unwrap();
         display.flush().await.unwrap();
     }
