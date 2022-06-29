@@ -20,18 +20,14 @@ You can move Ferris around with the buttons. It will appear on the other side of
 </p>
 
 
-
 ### Run the demo
 
 `$ cargo rb buttons`
 
 
-
 ### First video
 
 https://vimeo.com/705697973
-
-<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/705697973?h=689ef2836e&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="async/await Embedded 1"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
 
 ## Accelerometer demo
 
@@ -66,14 +62,12 @@ Check the [async driver](https://github.com/kalkyl/mpu6050-async.git) for this p
 
 https://vimeo.com/705697951
 
-<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/705697951?h=d4fc991c7b&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="async/await Embedded 2"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
-
 
 ## Rotary encoder demo
 
 The third example uses the same screen and board, with a rotary encoder [EC11](https://www.digikey.se/sv/products/detail/bourns-inc./PEC11R-4220F-S0024/4499660?utm_adgroup=Encoders&utm_source=google&utm_medium=cpc&utm_campaign=Shopping_Product_Sensors%2C%20Transducers&utm_term=&productid=4499660).
 
-It does not have a `VCC` pin because of how the rotary encoder works (it works as switches that shorts to GND).
+It does not have a `VDD` pin because of how the rotary encoder works (it works as switches that shorts to GND, the other pulls to VDD).
 
 In this demo, Ferris does not move but you can dim the screen with the encoder.
 
@@ -97,7 +91,6 @@ The rotary encoder and the screen must share the `GND` pin.
 
 https://vimeo.com/725265205
 
-<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/725265205?h=4a91292cf1&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="async/await Embedded 3"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
 
 ## Make your own image
 
