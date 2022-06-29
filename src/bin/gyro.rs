@@ -88,8 +88,8 @@ async fn main(spawner: Spawner, p: Peripherals) {
 
         // Change those magic numbers to modify acceleration
         // of Ferris on screen
-        let roll = (acc.0 * 2.0) as i32;
-        let pitch = (acc.1 * 2.0) as i32;
+        let roll = (acc.0 * 3.0) as i32;
+        let pitch = (acc.1 * 3.0) as i32;
 
         start_point.x = match start_point.x - roll {
             x if x < 0 => 0,
