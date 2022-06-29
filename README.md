@@ -1,5 +1,12 @@
 # Embassy examples
 
+**TL;DR**: Plug the stuff as per the figures and run:
+
+```console
+cargo rb <demo>
+```
+With demo = buttons, gyro, qdec
+
 ## Board buttons and screen
 
 The first example uses the nRF52840-DK and a [TFT LCD Display](https://www.amazon.com/Display-Module-ST7735-128x160-STM32/dp/B07BFV69DZ) (specs: 1.8 inch Color TFT LCD Display Module 128*160 Interface SPI Drive ST7735, can be bought at Amazon but really from anywhere.
@@ -73,7 +80,7 @@ In this demo, Ferris does not move but you can dim the screen with the encoder.
 
 
 <p align="center">
-<img src="./assets/boardscreen_3.JPG" width="80%">
+<img src="./assets/boardscreen_5.JPG" width="80%">
 </p>
 
 The rotary encoder and the screen must share the `GND` pin.
