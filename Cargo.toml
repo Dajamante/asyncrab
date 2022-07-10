@@ -23,6 +23,7 @@ tinybmp = "0.3.1"
 st7735-embassy = { git = "https://github.com/kalkyl/st7735-embassy" }
 mpu6050-async={ git = "https://github.com/kalkyl/mpu6050-async.git" }
 micromath = "2.0.0" 
+hmc5983 = "0.1.3"
 [features]
 # set logging levels here
 default = ["embassy-nrf/nrf52840"]
